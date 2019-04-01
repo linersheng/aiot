@@ -52,3 +52,12 @@
 >
 >}
 >````
+
+**Docker**
+```shell
+docker pull redis
+docker run -d -p 6379:6379 --name="myredis" redis
+
+docker pull elasticsearch:6.70
+docker run -d -p 9200:9200 --name="myelasticsearch" elasticsearch:6.7.0
+```
