@@ -20,6 +20,7 @@
 > |:--:|:--:|
 > |flag:devid:logintime | lastheartbeattime |
 > | dev:1234567890:1551234567| 1551234577 |
+>  
 > flag : key的开头标志   
 > devid : 设备的唯一id   
 > login : 设备第一次心跳时间   
@@ -56,7 +57,7 @@
 **Docker**
 ```shell
 docker pull redis
-docker run -d -p 6379:6379 --name="myredis" redis
+docker run -d -p 6379:6379 --name="myredis" redis redis-server --appendonly yes
 
 docker pull elasticsearch:6.70
 docker run -d -p 9200:9200 --name="myelasticsearch" elasticsearch:6.7.0
