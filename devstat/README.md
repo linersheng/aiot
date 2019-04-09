@@ -57,7 +57,7 @@
 **Docker**
 ```shell
 docker pull redis
-docker run -d -p 6379:6379 --name="myredis" redis redis-server --appendonly yes
+docker run -d -p 6379:6379 --name="myredis" -v /root/redis/redis.conf:/etc/redis/redis.conf -v /root/redis/data:/data redis  redis-server /etc/redis/redis.conf --appendonly yes
 
 docker pull elasticsearch:6.70
 docker run -d -p 9200:9200 --name="myelasticsearch" elasticsearch:6.7.0
