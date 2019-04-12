@@ -1,4 +1,4 @@
-package main
+package devstat
 
 import (
 	"fmt"
@@ -77,35 +77,51 @@ func (r *Redis) InitRedis() {
 	go r.runSubscribe()
 }
 
-func (r *Redis) CheckInDB(id string) bool {
+func (r *Redis) TryGetKeyInDB(id string) (string) {
 	c := r.pool.Get()
 	defer c.Close()
 
-	reply, err := c.Do("SCAN", 0, "MATCH", id, "COUNT", 1)
+	arr, err := redis.Values(c.Do("SCAN", 0, "MATCH", id+"*", "COUNT", 1))
 	if nil != err {
-		return false
+		fmt.Println("err:", err)
+		return ""
+	}
+	fmt.Printf("%v\n", arr)
+
+	iter, err := redis.Int(arr[0], nil)
+	if nil != err || iter == 0{
+		fmt.Println("err:", err)
+		return ""
 	}
 
-	arr, err := redis.MultiBulk(reply, nil)
-	if nil != err {
-		return false
-	}
+	fmt.Println("cursor",iter)
 
-	hint, err := redis.Int(arr[0], nil)
-	if nil != err || hint == 0 {
-		return false
+	vals, err := redis.Strings(arr[1], nil)
+	if err != nil {
+		fmt.Println("err:", err)
+		return ""
 	}
-
-	return true
+	fmt.Println("vals:", vals)
+	return vals[0]
 }
 
-func (r *Redis) SetExpired(id string, timeout int) error {
+func (r *Redis) SetExpired(key string, timeout int) error {
+	c := r.pool.Get()
+	defer c.Close()
+	fmt.Println("SetExpired(), key:", key)
+	if _, err := c.Do("EXPIRE", key, timeout); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *Redis) AddKeyWithTimeout(key string, timeout int) error {
 	c := r.pool.Get()
 	defer c.Close()
 
-	if _, err := c.Do("EXPIRE", id, timeout); err != nil {
+	fmt.Println("AddKeyWithTimeout(), key:", key)
+	if _, err := c.Do("SET", key, 0, "EX", timeout); err != nil {
 		return err
 	}
-
 	return nil
 }

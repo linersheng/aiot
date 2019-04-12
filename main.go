@@ -1,12 +1,12 @@
 package main
 
 import (
-	//"github.com/gomodule/redigo/redis"
-	"time"
+	"github.com/linersheng/aiot/devstat"
+	//"time"
 )
 
 const (
-	REDIS_ADDR = "localhost:6399"
+	REDIS_ADDR = "192.168.2.58:6379"
 	REDIS_PWD  = "linersheng"
 )
 
@@ -73,6 +73,7 @@ func subscribe() {
 	}
 }
 */
+
 func main() {
 	//c := pool.Get()
 	//defer c.Close()
@@ -83,17 +84,26 @@ func main() {
 	//c.Do("auth", REDIS_PWD)
 	//c.Do("set", "lines", 123)
 
-	r := &Redis{
-		Addr:      REDIS_ADDR,
-		Passwd:    REDIS_PWD,
-		Subscribe: 0x03,
-	}
+	// r := &Redis{
+	// 	Addr:      REDIS_ADDR,
+	// 	Passwd:    REDIS_PWD,
+	// 	Subscribe: 0x03,
+	// }
 
-	r.InitRedis()
+	// r.InitRedis()
 
-	for {
-		//v, _ := redis.Int(c.Do("get", "lines"))
-		//fmt.Println("read lines:", v)
-		time.Sleep(time.Second * 10)
+	// for {
+	// 	//v, _ := redis.Int(c.Do("get", "lines"))
+	// 	//fmt.Println("read lines:", v)
+	// 	time.Sleep(time.Second * 10)
+	// }
+
+	c := devstat.Config{
+		RedisAddr:   REDIS_ADDR,
+		RedisPasswd: REDIS_PWD,
+		HeartTime:   60,
+		Port:        4455,
 	}
+	devstat.SetConfig(c)
+	devstat.Run()
 }
